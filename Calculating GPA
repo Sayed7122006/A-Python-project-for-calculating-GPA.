@@ -1,0 +1,108 @@
+def get_grade_letter_and_gpa(score):
+    if 97 <= score <= 100:
+        return 'A', 4.0
+    elif 93 <= score <= 96:
+        return 'A', 4.0
+    elif 90 <= score <= 92:
+        return 'A-', 3.7
+    elif 87 <= score <= 89:
+        return 'B+', 3.3
+    elif 83 <= score <= 86:
+        return 'B', 3.0
+    elif 80 <= score <= 82:
+        return 'B-', 2.7
+    elif 77 <= score <= 79:
+        return 'C+', 2.3
+    elif 73 <= score <= 76:
+        return 'C', 2.0
+    elif 70 <= score <= 72:
+        return 'C-', 1.7
+    elif 67 <= score <= 69:
+        return 'D+', 1.3
+    elif 63 <= score <= 66:
+        return 'D', 1.0
+    elif 60 <= score <= 62:
+        return 'D-', 0.7
+    elif 0 <= score < 60:
+        return 'F', 0.0
+    else:
+        return 'Invalid', 0.0
+
+def get_overall_grade(final_gpa):
+    if final_gpa >= 3.6:
+        return "Excellent"
+    elif final_gpa >= 2.7:
+        return "Very Good"
+    elif final_gpa >= 2.0:
+        return "Good"
+    elif final_gpa >= 1.0:
+        return "Acceptable"
+    else:
+        return "Weak"
+
+def main():
+    subjects = [
+        ("Discrete and Mathematics", 2, "Math"),
+        ("Probability and Statistics", 3, "Math"),
+        ("Structure Programming", 3, "Programming"),
+        ("Database", 3, "Programming"),
+        ("Introduction to Artificial Intelligence", 3, "Programming"),
+        ("English", 2, "Language")
+    ]
+
+    total_weighted_gpa = 0
+    total_credits = 0
+    grades_info = []
+
+    category_gpa = {
+        "Math": {"gpa": 0, "credits": 0},
+        "Programming": {"gpa": 0, "credits": 0},
+        "Language": {"gpa": 0, "credits": 0}
+    }
+
+    print("Enter your scores (0 - 100) for each subject:\n")
+
+    for subject, credits, category in subjects:
+        while True:
+            try:
+                score = float(input(f"{subject}: "))
+                if 0 <= score <= 100:
+                    break
+                else:
+                    print("Please enter a score between 0 and 100.")
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
+
+        grade_letter, gpa_value = get_grade_letter_and_gpa(score)
+        weighted_gpa = gpa_value * credits
+
+        total_weighted_gpa += weighted_gpa
+        total_credits += credits
+
+        category_gpa[category]["gpa"] += weighted_gpa
+        category_gpa[category]["credits"] += credits
+
+        grades_info.append((subject, score, grade_letter, gpa_value, credits))
+
+    # Detailed Report
+    print("\nDetailed Report:\n")
+    for subject, score, grade_letter, gpa_value, credits in grades_info:
+        print(f"{subject} ({credits} credits)")
+        print(f"Score: {score:.1f}% | Grade: {grade_letter} | GPA: {gpa_value} | Weighted GPA: {gpa_value * credits:.2f}\n")
+
+    final_gpa = total_weighted_gpa / total_credits
+    overall_grade = get_overall_grade(final_gpa)
+
+    print(f"Overall Weighted GPA: {final_gpa:.2f}")
+    print(f"Overall Grade: {overall_grade}")
+
+    # Category Report
+    print("\nPerformance by Category:")
+    for cat, data in category_gpa.items():
+        if data["credits"] > 0:
+            cat_gpa = data["gpa"] / data["credits"]
+            cat_grade = get_overall_grade(cat_gpa)
+            print(f"{cat}: {cat_gpa:.2f} ({cat_grade})")
+
+# Run the program
+main()
