@@ -1,0 +1,123 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def get_grade_letter_and_gpa(score):
+    if 97 <= score <= 100:
+        return 'A', 4.0
+    elif 93 <= score <= 96:
+        return 'A', 4.0
+    elif 90 <= score <= 92:
+        return 'A-', 3.7
+    elif 87 <= score <= 89:
+        return 'B+', 3.3
+    elif 83 <= score <= 86:
+        return 'B', 3.0
+    elif 80 <= score <= 82:
+        return 'B-', 2.7
+    elif 77 <= score <= 79:
+        return 'C+', 2.3
+    elif 73 <= score <= 76:
+        return 'C', 2.0
+    elif 70 <= score <= 72:
+        return 'C-', 1.7
+    elif 67 <= score <= 69:
+        return 'D+', 1.3
+    elif 63 <= score <= 66:
+        return 'D', 1.0
+    elif 60 <= score <= 62:
+        return 'D-', 0.7
+    elif 0 <= score < 60:
+        return 'F', 0.0
+    else:
+        return 'Invalid', 0.0
+
+def get_overall_grade(final_gpa):
+    if final_gpa >= 3.6:
+        return "Excellent"
+    elif final_gpa >= 2.7:
+        return "Very Good"
+    elif final_gpa >= 2.0:
+        return "Good"
+    elif final_gpa >= 1.0:
+        return "Pass"
+    else:
+        return "Weak"
+
+def calculate_gpa():
+    subjects = [
+        ("Discrete and Mathematics", 2, "Math"),
+        ("Probability and Statistics", 3, "Math"),
+        ("Structure Programming", 3, "Programming"),
+        ("Database", 3, "Programming"),
+        ("Introduction to Artificial Intelligence", 3, "Programming"),
+        ("English", 2, "Language")
+    ]
+
+    total_weighted_gpa = 0
+    total_credits = 0
+    category_gpa = {"Math": {"gpa": 0, "credits": 0},
+                    "Programming": {"gpa": 0, "credits": 0},
+                    "Language": {"gpa": 0, "credits": 0}}
+    
+    output = ""
+
+    try:
+        for i, (subject, credits, category) in enumerate(subjects):
+            score = float(entries[i].get())
+            if not 0 <= score <= 100:
+                raise ValueError("Score must be between 0 and 100.")
+
+            grade_letter, gpa_value = get_grade_letter_and_gpa(score)
+            weighted_gpa = gpa_value * credits
+
+            total_weighted_gpa += weighted_gpa
+            total_credits += credits
+            category_gpa[category]["gpa"] += weighted_gpa
+            category_gpa[category]["credits"] += credits
+
+            output += f"{subject} ({credits} credits): {score}% → {grade_letter} | GPA: {gpa_value}\n"
+
+        final_gpa = total_weighted_gpa / total_credits
+        overall = get_overall_grade(final_gpa)
+        output += f"\nFinal GPA: {final_gpa:.2f} → {overall}\n"
+
+        output += "\nYour performance by category:\n"
+        for cat, data in category_gpa.items():
+            if data["credits"] > 0:
+                cat_gpa = data["gpa"] / data["credits"]
+                cat_grade = get_overall_grade(cat_gpa)
+                output += f"- {cat}: {cat_gpa:.2f} → {cat_grade}\n"
+
+        messagebox.showinfo("Evaluation Result", output)
+
+    except ValueError as ve:
+        messagebox.showerror("Input Error", str(ve))
+
+# GUI setup
+window = tk.Tk()
+window.title("GPA and General Grade Calculator")
+window.geometry("500x500")
+
+tk.Label(window, text="Enter your scores for each subject (0 - 100):", font=("Arial", 14)).pack(pady=10)
+
+subjects_names = [
+    "Discrete and Mathematics",
+    "Probability and Statistics",
+    "Structure Programming",
+    "Database",
+    "Introduction to Artificial Intelligence",
+    "English"
+]
+
+entries = []
+for subject in subjects_names:
+    frame = tk.Frame(window)
+    frame.pack(pady=5)
+    tk.Label(frame, text=subject, width=35, anchor='w').pack(side=tk.LEFT)
+    entry = tk.Entry(frame, width=5)
+    entry.pack(side=tk.LEFT)
+    entries.append(entry)
+
+tk.Button(window, text="Calculate GPA", command=calculate_gpa, bg="green", fg="white").pack(pady=20)
+
+window.mainloop()
